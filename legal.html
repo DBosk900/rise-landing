@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RISE — Privacy Policy e Termini di Servizio</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C0392B;
+    --orange: #E07B00;
+    --gold: #F5A623;
+    --black: #0D0D0D;
+    --dark: #1A0A0A;
+    --card: #1E0808;
+    --text: #F5F0EB;
+    --muted: #8A7A7A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 16px;
+    line-height: 1.8;
+  }
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: rgba(13,0,0,0.97);
+    border-bottom: 1px solid rgba(192,57,43,0.2);
+  }
+  .nav-logo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 4px;
+    text-decoration: none;
+  }
+  .nav-back {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--text); }
+
+  .tabs {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 40px 60px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .tab-btn {
+    padding: 14px 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: var(--muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    margin-bottom: -1px;
+  }
+  .tab-btn.active {
+    color: var(--red);
+    border-bottom-color: var(--red);
+  }
+
+  .content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 60px 40px 120px;
+    display: none;
+  }
+  .content.active { display: block; }
+
+  .doc-header {
+    margin-bottom: 60px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .doc-eyebrow {
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 16px;
+  }
+  .doc-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 20px;
+  }
+  .doc-meta {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  h2 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-top: 48px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(192,57,43,0.2);
+  }
+  h3 {
+    font-family: 'Oswald', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    margin-top: 28px;
+    margin-bottom: 10px;
+  }
+  p { color: var(--muted); margin-bottom: 16px; }
+  p strong { color: var(--text); font-weight: 500; }
+  ul, ol {
+    color: var(--muted);
+    padding-left: 24px;
+    margin-bottom: 16px;
+  }
+  li { margin-bottom: 8px; }
+  li strong { color: var(--text); font-weight: 500; }
+  a { color: var(--orange); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .highlight-box {
+    background: var(--card);
+    border-left: 3px solid var(--red);
+    padding: 20px 24px;
+    margin: 24px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .highlight-box p { margin: 0; color: var(--text); }
+
+  .contact-box {
+    background: var(--card);
+    border: 1px solid rgba(192,57,43,0.3);
+    padding: 32px;
+    margin-top: 48px;
+    border-radius: 4px;
+    text-align: center;
+  }
+  .contact-box h3 { color: var(--red); margin-top: 0; }
+  .contact-box a {
+    display: inline-block;
+    margin-top: 12px;
+    background: var(--red);
+    color: white;
+    padding: 10px 28px;
+    border-radius: 2px;
+    font-family: 'Oswald', sans-serif;
+    letter-spacing: 1px;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .tabs { padding: 24px 24px 0; }
+    .tab-btn { padding: 12px 20px; font-size: 14px; }
+    .content { padding: 40px 24px 80px; }
+    .doc-title { font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">RISE</a>
+  <a href="index.html" class="nav-back">← Torna alla home</a>
+</nav>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="showTab('privacy', this)">Privacy Policy</button>
+  <button class="tab-btn" onclick="showTab('termini', this)">Termini di Servizio</button>
+</div>
+
+<!-- PRIVACY POLICY -->
+<div class="content active" id="privacy">
+  <div class="doc-header">
+    <div class="doc-eyebrow">Documento legale</div>
+    <h1 class="doc-title">PRIVACY POLICY</h1>
+    <p class="doc-meta">Ultima modifica: 30 marzo 2026 · Versione 1.0</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>Questa Privacy Policy descrive come RISE raccoglie, utilizza e protegge i dati personali degli utenti dell'app mobile RISE e del sito web rise.app.</p>
+  </div>
+
+  <h2>1. Titolare del Trattamento</h2>
+  <p>Il titolare del trattamento dei dati personali è:</p>
+  <p><strong>Damiano Boschino</strong><br>
+  Email: <a href="mailto:boschinod@gmail.com">boschinod@gmail.com</a><br>
+  GitHub: <a href="https://github.com/DBosk900">github.com/DBosk900</a></p>
+
+  <h2>2. Dati che Raccogliamo</h2>
+
+  <h3>2.1 Dati forniti direttamente dall'utente</h3>
+  <ul>
+    <li><strong>Account:</strong> nome, indirizzo email, password (cifrata), tipo di account (artista/ascoltatore)</li>
+    <li><strong>Profilo artista:</strong> nome d'arte, biografia, genere musicale, foto profilo</li>
+    <li><strong>Contenuti caricati:</strong> file audio MP3/WAV, immagini cover art, testi dei brani</li>
+    <li><strong>Pagamenti:</strong> IBAN o email PayPal per ricevere il montepremi (non conserviamo dati di carte di credito)</li>
+    <li><strong>Comunicazioni:</strong> messaggi inviati al supporto</li>
+  </ul>
+
+  <h3>2.2 Dati raccolti automaticamente</h3>
+  <ul>
+    <li><strong>Dati di utilizzo:</strong> brani ascoltati, voti espressi, sessioni di utilizzo</li>
+    <li><strong>Dati tecnici:</strong> indirizzo IP, tipo di dispositivo, sistema operativo, versione app</li>
+    <li><strong>Token notifiche:</strong> per l'invio di notifiche push (FCM)</li>
+    <li><strong>Dati pubblicitari:</strong> tramite Google AdMob, per la personalizzazione degli annunci</li>
+  </ul>
+
+  <h3>2.3 Dati di terze parti</h3>
+  <ul>
+    <li><strong>Google Sign-In:</strong> se scegli di accedere con Google, riceviamo nome ed email dal tuo account Google</li>
+    <li><strong>RevenueCat:</strong> dati relativi agli acquisti in-app e agli abbonamenti</li>
+    <li><strong>Stripe:</strong> dati relativi ai pagamenti web (gestiti direttamente da Stripe)</li>
+  </ul>
+
+  <h2>3. Come Utilizziamo i Dati</h2>
+  <ul>
+    <li>Creazione e gestione del tuo account RISE</li>
+    <li>Erogazione del servizio: gare musicali, votazioni, classifiche</li>
+    <li>Elaborazione dei pagamenti e dei montepremi</li>
+    <li>Invio di notifiche push (nuova gara, eliminazioni, vincitori)</li>
+    <li>Visualizzazione di annunci pubblicitari tramite AdMob (solo utenti free)</li>
+    <li>Miglioramento del servizio e analisi statistiche aggregate</li>
+    <li>Assistenza clienti e risposta alle tue richieste</li>
+    <li>Conformità agli obblighi legali</li>
+  </ul>
+
+  <h2>4. Base Giuridica del Trattamento</h2>
+  <ul>
+    <li><strong>Esecuzione del contratto:</strong> per fornire i servizi RISE</li>
+    <li><strong>Consenso:</strong> per notifiche push e pubblicità personalizzata</li>
+    <li><strong>Legittimo interesse:</strong> per sicurezza, prevenzione frodi e miglioramento del servizio</li>
+    <li><strong>Obbligo legale:</strong> per adempiere a obblighi fiscali e normativi</li>
+  </ul>
+
+  <h2>5. Condivisione dei Dati</h2>
+  <p>Non vendiamo i tuoi dati personali a terzi. Condividiamo i dati solo con:</p>
+  <ul>
+    <li><strong>Firebase (Google):</strong> database, autenticazione, storage file, notifiche push</li>
+    <li><strong>Google AdMob:</strong> pubblicità per utenti free</li>
+    <li><strong>RevenueCat:</strong> gestione abbonamenti e acquisti in-app</li>
+    <li><strong>Stripe:</strong> elaborazione pagamenti web</li>
+    <li><strong>Agora.io:</strong> infrastruttura live streaming</li>
+  </ul>
+  <p>Tutti i provider sono conformi al GDPR. I dati Firebase sono archiviati su server europei.</p>
+
+  <h2>6. Conservazione dei Dati</h2>
+  <ul>
+    <li><strong>Account attivi:</strong> conserviamo i dati per tutta la durata del rapporto</li>
+    <li><strong>Account cancellati:</strong> i dati vengono eliminati entro 30 giorni dalla richiesta</li>
+    <li><strong>Dati fiscali:</strong> conservati per 10 anni come richiesto dalla legge italiana</li>
+    <li><strong>Brani caricati:</strong> rimangono disponibili per 30 giorni dopo la cancellazione dell'account, poi eliminati</li>
+  </ul>
+
+  <h2>7. I Tuoi Diritti (GDPR)</h2>
+  <p>Hai il diritto di:</p>
+  <ul>
+    <li><strong>Accesso:</strong> richiedere una copia dei tuoi dati personali</li>
+    <li><strong>Rettifica:</strong> correggere dati inesatti o incompleti</li>
+    <li><strong>Cancellazione:</strong> richiedere l'eliminazione dei tuoi dati ("diritto all'oblio")</li>
+    <li><strong>Portabilità:</strong> ricevere i tuoi dati in formato strutturato e leggibile</li>
+    <li><strong>Opposizione:</strong> opporsi al trattamento per finalità di marketing</li>
+    <li><strong>Limitazione:</strong> richiedere la limitazione del trattamento in certi casi</li>
+    <li><strong>Revoca del consenso:</strong> in qualsiasi momento per trattamenti basati sul consenso</li>
+  </ul>
+  <p>Per esercitare i tuoi diritti, contattaci a <a href="mailto:boschinod@gmail.com">boschinod@gmail.com</a>. Risponderemo entro 30 giorni.</p>
+
+  <h2>8. Sicurezza dei Dati</h2>
+  <p>Adottiamo misure tecniche e organizzative adeguate per proteggere i tuoi dati:</p>
+  <ul>
+    <li>Crittografia HTTPS per tutte le comunicazioni</li>
+    <li>Password cifrate con algoritmi sicuri (gestite da Firebase Auth)</li>
+    <li>Accesso ai dati limitato al personale autorizzato</li>
+    <li>Monitoraggio continuo per rilevare accessi non autorizzati</li>
+  </ul>
+
+  <h2>9. Cookie e Tecnologie di Tracciamento</h2>
+  <p>L'app RISE non utilizza cookie. Il sito web rise.app utilizza:</p>
+  <ul>
+    <li><strong>Cookie tecnici:</strong> necessari per il funzionamento del sito</li>
+    <li><strong>Google Analytics:</strong> analisi del traffico in forma anonima</li>
+  </ul>
+
+  <h2>10. Minori</h2>
+  <p>RISE non è destinata a utenti di età inferiore ai 13 anni. Non raccogliamo consapevolmente dati personali di minori. Se sei un genitore e ritieni che tuo figlio abbia creato un account, contattaci immediatamente.</p>
+
+  <h2>11. Modifiche alla Privacy Policy</h2>
+  <p>Possiamo aggiornare questa policy periodicamente. Ti notificheremo le modifiche significative tramite email o notifica in-app. L'uso continuato dell'app dopo le modifiche costituisce accettazione della nuova policy.</p>
+
+  <h2>12. Contatti e Reclami</h2>
+  <p>Per qualsiasi domanda sulla privacy o per esercitare i tuoi diritti:</p>
+
+  <div class="contact-box">
+    <h3>Hai domande sulla privacy?</h3>
+    <p style="color:var(--muted)">Siamo qui per aiutarti. Rispondiamo entro 30 giorni.</p>
+    <a href="mailto:boschinod@gmail.com">Contattaci →</a>
+  </div>
+
+  <p style="margin-top:32px">Hai anche il diritto di presentare un reclamo all'autorità di controllo competente. In Italia: <a href="https://www.garanteprivacy.it" target="_blank">Garante per la protezione dei dati personali</a>.</p>
+</div>
+
+<!-- TERMINI DI SERVIZIO -->
+<div class="content" id="termini">
+  <div class="doc-header">
+    <div class="doc-eyebrow">Documento legale</div>
+    <h1 class="doc-title">TERMINI DI SERVIZIO</h1>
+    <p class="doc-meta">Ultima modifica: 30 marzo 2026 · Versione 1.0</p>
+  </div>
+
+  <div class="highlight-box">
+    <p>Leggendo questi Termini di Servizio, accetti le condizioni d'uso di RISE. Ti preghiamo di leggerli attentamente prima di utilizzare l'app o il sito web.</p>
+  </div>
+
+  <h2>1. Accettazione dei Termini</h2>
+  <p>Utilizzando RISE (l'app mobile e il sito web), dichiari di avere almeno 13 anni di età e di accettare integralmente questi Termini di Servizio. Se non accetti questi termini, ti preghiamo di non utilizzare il servizio.</p>
+
+  <h2>2. Descrizione del Servizio</h2>
+  <p>RISE è una piattaforma musicale competitiva che permette agli artisti indipendenti di:</p>
+  <ul>
+    <li>Caricare brani musicali originali e inediti</li>
+    <li>Partecipare a gare mensili con eliminazioni progressive</li>
+    <li>Vincere un montepremi reale (pool prize)</li>
+    <li>Eseguire live streaming</li>
+    <li>Costruire un profilo pubblico</li>
+  </ul>
+  <p>Gli ascoltatori possono ascoltare gratuitamente i brani in gara e votare i loro preferiti.</p>
+
+  <h2>3. Account e Registrazione</h2>
+  <ul>
+    <li>Devi fornire informazioni accurate e aggiornate durante la registrazione</li>
+    <li>Sei responsabile della sicurezza del tuo account e della tua password</li>
+    <li>Non puoi cedere il tuo account a terzi</li>
+    <li>RISE si riserva il diritto di sospendere account che violano questi termini</li>
+    <li>Un utente non può creare più di un account per tipo (artista o ascoltatore)</li>
+  </ul>
+
+  <h2>4. Abbonamenti e Pagamenti</h2>
+
+  <h3>4.1 Piani Artista</h3>
+  <ul>
+    <li>I piani artista si rinnovano automaticamente mensilmente</li>
+    <li>Puoi disdire in qualsiasi momento dalle impostazioni dell'app</li>
+    <li>La disdetta diventa effettiva alla fine del periodo di fatturazione corrente</li>
+    <li>Non sono previsti rimborsi per periodi parziali</li>
+  </ul>
+
+  <h3>4.2 Iscrizione alle Gare</h3>
+  <ul>
+    <li>Il costo di iscrizione è di <strong>2,00€ per brano</strong></li>
+    <li>L'iscrizione è definitiva e non rimborsabile</li>
+    <li>Il 70% delle iscrizioni raccolte costituisce il montepremi</li>
+    <li>RISE trattiene il 30% come commissione di servizio</li>
+  </ul>
+
+  <h3>4.3 Voti Extra</h3>
+  <ul>
+    <li>I voti extra (0,99€ per 5 voti) non scadono e non sono rimborsabili</li>
+    <li>I voti gratuiti (5 a settimana) si rigenerano ogni lunedì alle 00:00 CET</li>
+  </ul>
+
+  <h2>5. Regole delle Gare</h2>
+
+  <h3>5.1 Requisiti del brano</h3>
+  <ul>
+    <li>Il brano deve essere <strong>originale e inedito</strong> — non pubblicato su altre piattaforme prima dell'iscrizione</li>
+    <li>L'artista deve detenere tutti i diritti sul brano (testo, musica, registrazione)</li>
+    <li>Non sono ammessi cover o remix di brani altrui</li>
+    <li>Il file audio deve essere in formato MP3 o WAV, max 20MB</li>
+    <li>La cover art deve essere un'immagine originale, min 500x500px</li>
+  </ul>
+
+  <h3>5.2 Esclusiva temporanea</h3>
+  <ul>
+    <li>Il brano rimane in <strong>esclusiva su RISE per 30 giorni</strong> dalla fine della gara</li>
+    <li>Dopo i 30 giorni, l'artista è libero di pubblicare il brano su qualsiasi altra piattaforma</li>
+    <li>RISE non acquisisce diritti permanenti sul brano</li>
+  </ul>
+
+  <h3>5.3 Struttura della gara</h3>
+  <ul>
+    <li>Le gare si svolgono mensilmente con tema stagionale</li>
+    <li>I brani sono divisi per genere: Indie, Hip Hop/Trap, Pop, Rock, Elettronica, World</li>
+    <li>Le fasi sono: Gironi → Quarti → Semifinale → Finale</li>
+    <li>La classifica viene aggiornata ogni 24 ore</li>
+    <li>Le decisioni di RISE sulle eliminazioni sono definitive</li>
+  </ul>
+
+  <h3>5.4 Montepremi</h3>
+  <ul>
+    <li><strong>1° posto:</strong> 70% del montepremi + 2 mesi abbonamento gratuiti</li>
+    <li><strong>2° posto:</strong> 20% del montepremi + 1 mese abbonamento gratuito</li>
+    <li><strong>3° posto:</strong> 10% del montepremi + iscrizione gratuita gara successiva</li>
+    <li>Il montepremi viene pagato entro 7 giorni dalla fine della gara tramite bonifico bancario o PayPal</li>
+    <li>Il vincitore deve fornire dati di pagamento validi entro 30 giorni, pena la decadenza del premio</li>
+  </ul>
+
+  <h2>6. Contenuti degli Utenti</h2>
+
+  <h3>6.1 Proprietà</h3>
+  <p>Mantieni la piena proprietà intellettuale di tutti i contenuti che carichi su RISE. Caricando contenuti, concedi a RISE una <strong>licenza non esclusiva, mondiale, gratuita</strong> per visualizzare, riprodurre e promuovere i tuoi contenuti all'interno della piattaforma.</p>
+
+  <h3>6.2 Contenuti vietati</h3>
+  <p>È vietato caricare contenuti che:</p>
+  <ul>
+    <li>Violino diritti d'autore o marchi di terzi</li>
+    <li>Contengano materiale offensivo, discriminatorio, violento o sessualmente esplicito</li>
+    <li>Promuovano attività illegali</li>
+    <li>Contengano spam, malware o contenuti ingannevoli</li>
+    <li>Violino la privacy di terzi</li>
+  </ul>
+
+  <h3>6.3 Moderazione</h3>
+  <p>RISE si riserva il diritto di rimuovere qualsiasi contenuto che violi questi termini, senza preavviso e senza rimborso dell'iscrizione.</p>
+
+  <h2>7. Live Streaming</h2>
+  <ul>
+    <li>I live streaming devono rispettare le stesse regole sui contenuti vietati</li>
+    <li>RISE può interrompere un live streaming che violi i termini</li>
+    <li>Le donazioni ricevute durante i live sono soggette alle commissioni di pagamento standard</li>
+    <li>I replay dei live sono disponibili per 30 giorni dopo la trasmissione</li>
+  </ul>
+
+  <h2>8. Sistema Referral</h2>
+  <ul>
+    <li>Ogni artista ha un codice referral personale</li>
+    <li>Invitando un artista che si abbona, ottieni 1 mese gratuito di abbonamento</li>
+    <li>Il bonus viene accreditato dopo 30 giorni dall'abbonamento dell'invitato</li>
+    <li>RISE si riserva il diritto di modificare o terminare il programma referral in qualsiasi momento</li>
+    <li>Abusi del sistema referral (account falsi, auto-referral) comportano la sospensione dell'account</li>
+  </ul>
+
+  <h2>9. Comportamento degli Utenti</h2>
+  <p>È vietato:</p>
+  <ul>
+    <li>Manipolare il sistema di voto (bot, account multipli, acquisto di voti da terzi)</li>
+    <li>Tentare di accedere a parti non autorizzate del servizio</li>
+    <li>Interferire con il funzionamento della piattaforma</li>
+    <li>Molestare altri utenti</li>
+    <li>Impersonare altri artisti o il team RISE</li>
+  </ul>
+
+  <h2>10. Limitazione di Responsabilità</h2>
+  <p>RISE è fornito "così com'è". Non garantiamo:</p>
+  <ul>
+    <li>Che il servizio sia sempre disponibile senza interruzioni</li>
+    <li>Un numero minimo di partecipanti alle gare</li>
+    <li>Un montepremi minimo garantito</li>
+    <li>Risultati specifici dalla partecipazione alle gare</li>
+  </ul>
+  <p>RISE non è responsabile per perdite indirette, danni consequenziali o perdita di profitto derivanti dall'uso del servizio.</p>
+
+  <h2>11. Modifiche al Servizio</h2>
+  <p>RISE si riserva il diritto di modificare, sospendere o interrompere qualsiasi parte del servizio in qualsiasi momento. In caso di interruzione permanente, gli abbonamenti attivi saranno rimborsati pro-rata.</p>
+
+  <h2>12. Legge Applicabile e Foro Competente</h2>
+  <p>Questi Termini sono regolati dalla legge italiana. Per qualsiasi controversia, il foro competente è quello di Roma, Italia, salvo diversi diritti previsti dalla normativa a tutela dei consumatori.</p>
+
+  <h2>13. Modifiche ai Termini</h2>
+  <p>Possiamo aggiornare questi Termini periodicamente. Le modifiche significative saranno comunicate via email con almeno 30 giorni di preavviso. L'uso continuato del servizio dopo le modifiche costituisce accettazione dei nuovi Termini.</p>
+
+  <h2>14. Contatti</h2>
+  <div class="contact-box">
+    <h3>Hai domande sui Termini?</h3>
+    <p style="color:var(--muted)">Contattaci per qualsiasi chiarimento legale o commerciale.</p>
+    <a href="mailto:boschinod@gmail.com">Contattaci →</a>
+  </div>
+</div>
+
+<script>
+  function showTab(id, btn) {
+    document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
