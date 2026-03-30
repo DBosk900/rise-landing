@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RISE — Competi. Vinci. Sali.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C0392B;
+    --orange: #E07B00;
+    --gold: #F5A623;
+    --black: #0D0D0D;
+    --dark: #1A0A0A;
+    --card: #1E0808;
+    --text: #F5F0EB;
+    --muted: #8A7A7A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    background: linear-gradient(to bottom, rgba(13,0,0,0.95), transparent);
+    backdrop-filter: blur(10px);
+  }
+  .nav-logo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 4px;
+    text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 40px; align-items: center; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--red);
+    color: white !important;
+    padding: 10px 24px;
+    border-radius: 2px;
+    font-weight: 500;
+  }
+  .nav-cta:hover { background: #a93226 !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 120px 60px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-flames {
+    position: absolute;
+    right: -100px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 700px;
+    height: 800px;
+    opacity: 0.15;
+  }
+  .hero-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero h1 {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(72px, 10vw, 140px);
+    font-weight: 700;
+    line-height: 0.9;
+    letter-spacing: -2px;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero h1 span { color: var(--red); }
+  .hero-sub {
+    font-size: clamp(18px, 2vw, 24px);
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.6;
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-sub strong { color: var(--text); font-weight: 500; }
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .btn-primary {
+    background: var(--red);
+    color: white;
+    padding: 16px 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-primary:hover { background: #a93226; transform: translateY(-2px); }
+  .btn-secondary {
+    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--text);
+    padding: 16px 40px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--red); color: var(--red); }
+  .hero-stats {
+    position: absolute;
+    bottom: 60px;
+    left: 60px;
+    display: flex;
+    gap: 60px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1s forwards;
+  }
+  .stat-item { text-align: left; }
+  .stat-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .scroll-indicator {
+    position: absolute;
+    bottom: 60px;
+    right: 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    animation: bounce 2s infinite;
+  }
+  .scroll-indicator::after {
+    content: '';
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+  }
+
+  /* MONTEPREMI COUNTER */
+  .montepremi-section {
+    padding: 80px 60px;
+    background: var(--dark);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .montepremi-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--red), transparent);
+  }
+  .montepremi-label {
+    font-size: 12px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 16px;
+  }
+  .montepremi-counter {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(60px, 12vw, 120px);
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    text-shadow: 0 0 80px rgba(245,166,35,0.3);
+  }
+  .montepremi-sub {
+    color: var(--muted);
+    font-size: 16px;
+    margin-top: 16px;
+  }
+  .montepremi-sub span { color: var(--text); }
+
+  /* HOW IT WORKS */
+  .how-section {
+    padding: 120px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-size: 12px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 80px;
+  }
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2px;
+  }
+  .step-card {
+    background: var(--card);
+    padding: 48px 40px;
+    position: relative;
+    transition: background 0.3s;
+  }
+  .step-card:hover { background: #2a0c0c; }
+  .step-num {
+    font-family: 'Oswald', sans-serif;
+    font-size: 80px;
+    font-weight: 700;
+    color: rgba(192,57,43,0.15);
+    line-height: 1;
+    margin-bottom: 24px;
+    display: block;
+  }
+  .step-icon {
+    font-size: 32px;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .step-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .step-desc {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .step-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+  .step-card:hover::after { transform: scaleX(1); }
+
+  /* PIANI */
+  .piani-section {
+    padding: 120px 60px;
+    background: var(--dark);
+    position: relative;
+  }
+  .piani-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--red), transparent);
+  }
+  .piani-section .inner { max-width: 1200px; margin: 0 auto; }
+  .piani-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2px;
+    margin-top: 80px;
+  }
+  .piano-card {
+    background: var(--card);
+    padding: 48px 40px;
+    position: relative;
+    transition: transform 0.3s;
+  }
+  .piano-card:hover { transform: translateY(-4px); }
+  .piano-card.featured {
+    background: var(--red);
+    outline: 2px solid var(--gold);
+  }
+  .piano-badge {
+    position: absolute;
+    top: -12px;
+    left: 40px;
+    background: var(--gold);
+    color: var(--black);
+    font-family: 'Oswald', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    text-transform: uppercase;
+  }
+  .piano-name {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .piano-price {
+    font-family: 'Oswald', sans-serif;
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .piano-card.featured .piano-price { color: white; }
+  .piano-period { color: var(--muted); font-size: 14px; margin-bottom: 32px; }
+  .piano-card.featured .piano-period { color: rgba(255,255,255,0.7); }
+  .piano-features { list-style: none; display: flex; flex-direction: column; gap: 14px; margin-bottom: 40px; }
+  .piano-features li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .piano-card.featured .piano-features li { color: rgba(255,255,255,0.85); }
+  .piano-features li::before {
+    content: '→';
+    color: var(--red);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .piano-card.featured .piano-features li::before { color: var(--gold); }
+  .piano-btn {
+    display: block;
+    text-align: center;
+    padding: 14px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: all 0.2s;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: var(--text);
+  }
+  .piano-card.featured .piano-btn {
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    font-weight: 600;
+  }
+  .piano-btn:hover { border-color: var(--red); color: var(--red); }
+  .piano-card.featured .piano-btn:hover { background: #e09610; }
+
+  /* TESTIMONIAL / VINCITORI */
+  .vincitori-section {
+    padding: 120px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .vincitori-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 2px;
+    margin-top: 80px;
+  }
+  .vincitore-card {
+    background: var(--card);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .vincitore-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--red);
+  }
+  .vincitore-mese {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 20px;
+  }
+  .vincitore-quote {
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 28px;
+    font-style: italic;
+  }
+  .vincitore-info { display: flex; align-items: center; gap: 16px; }
+  .vincitore-avatar {
+    width: 48px; height: 48px;
+    background: var(--red);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .vincitore-nome {
+    font-family: 'Oswald', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .vincitore-dettagli { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .vincitore-prize {
+    margin-left: auto;
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+
+  /* EMAIL SIGNUP */
+  .signup-section {
+    padding: 120px 60px;
+    background: var(--dark);
+    text-align: center;
+    position: relative;
+  }
+  .signup-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--red), transparent);
+  }
+  .signup-title {
+    font-family: 'Oswald', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 700;
+    max-width: 700px;
+    margin: 0 auto 24px;
+    line-height: 1.1;
+  }
+  .signup-sub {
+    color: var(--muted);
+    font-size: 18px;
+    max-width: 500px;
+    margin: 0 auto 48px;
+    line-height: 1.6;
+  }
+  .signup-form {
+    display: flex;
+    gap: 0;
+    max-width: 540px;
+    margin: 0 auto;
+  }
+  .signup-form input {
+    flex: 1;
+    padding: 18px 24px;
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-right: none;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 16px;
+    outline: none;
+    border-radius: 2px 0 0 2px;
+    transition: border-color 0.2s;
+  }
+  .signup-form input:focus { border-color: var(--red); }
+  .signup-form input::placeholder { color: var(--muted); }
+  .signup-form button {
+    padding: 18px 32px;
+    background: var(--red);
+    color: white;
+    border: none;
+    font-family: 'Oswald', sans-serif;
+    font-size: 16px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 0 2px 2px 0;
+    transition: background 0.2s;
+  }
+  .signup-form button:hover { background: #a93226; }
+  .signup-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    margin-bottom: 40px;
+  }
+  .signup-tab {
+    padding: 10px 28px;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    font-family: 'Oswald', sans-serif;
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: none;
+    border-radius: 2px;
+  }
+  .signup-tab.active {
+    background: var(--red);
+    color: white;
+    border-color: var(--red);
+  }
+  .success-msg {
+    display: none;
+    color: var(--gold);
+    font-family: 'Oswald', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    margin-top: 20px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 60px;
+    background: var(--black);
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 24px;
+  }
+  .footer-logo {
+    font-family: 'Oswald', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 4px;
+  }
+  .footer-links { display: flex; gap: 32px; }
+  .footer-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    letter-spacing: 1px;
+    transition: color 0.2s;
+  }
+  .footer-links a:hover { color: var(--text); }
+  .footer-copy { color: var(--muted); font-size: 13px; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(8px); }
+  }
+  @keyframes flicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.85; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 24px 60px; }
+    .hero-stats { left: 24px; gap: 32px; }
+    .scroll-indicator { display: none; }
+    .how-section, .vincitori-section { padding: 80px 24px; }
+    .piani-section, .signup-section { padding: 80px 24px; }
+    footer { padding: 40px 24px; flex-direction: column; align-items: flex-start; }
+    .montepremi-section { padding: 60px 24px; }
+    .signup-form { flex-direction: column; }
+    .signup-form input { border-right: 1px solid rgba(255,255,255,0.1); border-bottom: none; border-radius: 2px 2px 0 0; }
+    .signup-form button { border-radius: 0 0 2px 2px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">RISE</a>
+  <div class="nav-links">
+    <a href="#come-funziona">Come funziona</a>
+    <a href="#piani">Piani</a>
+    <a href="#vincitori">Vincitori</a>
+    <a href="#iscriviti" class="nav-cta">Iscriviti gratis</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <svg class="hero-flames" viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="f1" x1="0.5" y1="1" x2="0.5" y2="0">
+        <stop offset="0%" stop-color="#6B0000" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#6B0000" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="f2" x1="0.5" y1="1" x2="0.5" y2="0">
+        <stop offset="0%" stop-color="#C0392B" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#C0392B" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="f3" x1="0.5" y1="1" x2="0.5" y2="0">
+        <stop offset="0%" stop-color="#F5A623" stop-opacity="1"/>
+        <stop offset="100%" stop-color="#F5A623" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <polygon points="200,20 120,600 280,600" fill="url(#f1)"/>
+    <polygon points="200,80 140,600 260,600" fill="url(#f2)"/>
+    <polygon points="200,160 165,600 235,600" fill="url(#f3)"/>
+  </svg>
+
+  <div class="hero-eyebrow">La prima piattaforma musicale competitiva</div>
+  <h1>CARICA.<br><span>COMPETI.</span><br>VINCI.</h1>
+  <p class="hero-sub">
+    Su Spotify carichi e speri.<br>
+    Su RISE carichi e puoi <strong>vincere il montepremi</strong>.<br>
+    Gare mensili per artisti indipendenti. Il pubblico decide.
+  </p>
+  <div class="hero-ctas">
+    <a href="#iscriviti" class="btn-primary">🔥 Sei un artista? Iscriviti</a>
+    <a href="#come-funziona" class="btn-secondary">Come funziona</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num" id="counter-artisti">0</div>
+      <div class="stat-label">Artisti iscritti</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" id="counter-montepremi">€0</div>
+      <div class="stat-label">Montepremi erogati</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num" id="counter-generi">6</div>
+      <div class="stat-label">Generi musicali</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">Scorri</div>
+</section>
+
+<!-- MONTEPREMI -->
+<div class="montepremi-section">
+  <div class="montepremi-label">Montepremi Aprile 2026</div>
+  <div class="montepremi-counter" id="montepremi">€ 0,00</div>
+  <div class="montepremi-sub">Cresce con ogni iscrizione — <span>ogni 2€ pagati, il 70% va al vincitore</span></div>
+</div>
+
+<!-- COME FUNZIONA -->
+<section class="how-section" id="come-funziona">
+  <div class="section-label">Il meccanismo</div>
+  <h2 class="section-title">COME<br>FUNZIONA</h2>
+  <div class="steps-grid">
+    <div class="step-card">
+      <span class="step-num">01</span>
+      <span class="step-icon">🎵</span>
+      <div class="step-title">Abbonati</div>
+      <p class="step-desc">Scegli il piano artista da 5,99€/mese. Accedi alla piattaforma e carica i tuoi brani inediti.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">02</span>
+      <span class="step-icon">⚔️</span>
+      <div class="step-title">Iscriviti alla gara</div>
+      <p class="step-desc">Paga 2€ per iscrivere il tuo brano inedito alla gara mensile. Scegli il tuo genere: Indie, Hip Hop, Pop, Rock, EDM o World.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">03</span>
+      <span class="step-icon">🗳️</span>
+      <div class="step-title">Il pubblico vota</div>
+      <p class="step-desc">Gironi, quarti, semifinale, finale. Eliminazioni progressive ogni settimana. Solo i migliori arrivano in fondo.</p>
+    </div>
+    <div class="step-card">
+      <span class="step-num">04</span>
+      <span class="step-icon">🏆</span>
+      <div class="step-title">Vinci il montepremi</div>
+      <p class="step-desc">Il vincitore porta a casa il 70% del totale raccolto. Più artisti partecipano, più il montepremi cresce.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PIANI -->
+<section class="piani-section" id="piani">
+  <div class="inner">
+    <div class="section-label">Piani artisti</div>
+    <h2 class="section-title">SCEGLI<br>IL TUO PIANO</h2>
+    <div class="piani-grid">
+      <div class="piano-card">
+        <div class="piano-name">Free</div>
+        <div class="piano-price">€0</div>
+        <div class="piano-period">per sempre</div>
+        <ul class="piano-features">
+          <li>5 brani caricabili</li>
+          <li>Profilo pubblico</li>
+          <li>Accesso alle classifiche</li>
+          <li>Nessuna gara</li>
+        </ul>
+        <a href="#iscriviti" class="piano-btn">Inizia gratis</a>
+      </div>
+      <div class="piano-card featured">
+        <div class="piano-badge">Più popolare</div>
+        <div class="piano-name">Creator</div>
+        <div class="piano-price">€4,99</div>
+        <div class="piano-period">al mese</div>
+        <ul class="piano-features">
+          <li>50 brani caricabili</li>
+          <li>1 ora di live/mese</li>
+          <li>Analytics standard</li>
+          <li>Partecipazione alle gare</li>
+        </ul>
+        <a href="#iscriviti" class="piano-btn">Scegli Creator</a>
+      </div>
+      <div class="piano-card">
+        <div class="piano-name">Pro</div>
+        <div class="piano-price">€19,99</div>
+        <div class="piano-period">al mese</div>
+        <ul class="piano-features">
+          <li>500 brani caricabili</li>
+          <li>20 ore di live/mese</li>
+          <li>Analytics avanzato</li>
+          <li>Merch integrato</li>
+          <li>Badge verificato</li>
+        </ul>
+        <a href="#iscriviti" class="piano-btn">Scegli Pro</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VINCITORI -->
+<section class="vincitori-section" id="vincitori">
+  <div class="section-label">Hall of fame</div>
+  <h2 class="section-title">I NOSTRI<br>VINCITORI</h2>
+  <div class="vincitori-grid">
+    <div class="vincitore-card">
+      <div class="vincitore-mese">Marzo 2026 — Indie</div>
+      <p class="vincitore-quote">"Non credevo di poter vincere. RISE mi ha dato la prova che la mia musica vale."</p>
+      <div class="vincitore-info">
+        <div class="vincitore-avatar">M</div>
+        <div>
+          <div class="vincitore-nome">Marco Ricci</div>
+          <div class="vincitore-dettagli">Notte Eterna · Roma</div>
+        </div>
+        <div class="vincitore-prize">€280</div>
+      </div>
+    </div>
+    <div class="vincitore-card">
+      <div class="vincitore-mese">Febbraio 2026 — Hip Hop</div>
+      <p class="vincitore-quote">"La gara mi ha spinto a finire il brano. Senza RISE non lo avrei mai pubblicato."</p>
+      <div class="vincitore-info">
+        <div class="vincitore-avatar">L</div>
+        <div>
+          <div class="vincitore-nome">Luca Ferro</div>
+          <div class="vincitore-dettagli">Cemento · Milano</div>
+        </div>
+        <div class="vincitore-prize">€340</div>
+      </div>
+    </div>
+    <div class="vincitore-card">
+      <div class="vincitore-mese">Gennaio 2026 — Pop</div>
+      <p class="vincitore-quote">"Ho guadagnato più in un mese su RISE che in un anno su Spotify."</p>
+      <div class="vincitore-info">
+        <div class="vincitore-avatar">S</div>
+        <div>
+          <div class="vincitore-nome">Sara Montini</div>
+          <div class="vincitore-dettagli">Radici · Napoli</div>
+        </div>
+        <div class="vincitore-prize">€195</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNUP -->
+<section class="signup-section" id="iscriviti">
+  <h2 class="signup-title">PRONTI A <span style="color:var(--red)">SALIRE</span>?</h2>
+  <p class="signup-sub">Iscriviti alla lista d'attesa. I primi 50 artisti ricevono 3 mesi di piano Creator gratis.</p>
+
+  <div class="signup-tabs">
+    <button class="signup-tab active" onclick="setTab('artista', this)">Sono un artista</button>
+    <button class="signup-tab" onclick="setTab('ascoltatore', this)">Voglio ascoltare</button>
+  </div>
+
+  <form class="signup-form" onsubmit="handleSubmit(event)">
+    <input type="email" id="email-input" placeholder="La tua email" required>
+    <button type="submit">Iscriviti 🔥</button>
+  </form>
+  <div class="success-msg" id="success-msg">✅ ISCRITTO! Ti contatteremo presto.</div>
+  <p style="color:var(--muted);font-size:13px;margin-top:20px;">Nessuno spam. Solo aggiornamenti importanti.</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">RISE</div>
+  <div class="footer-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Termini di servizio</a>
+    <a href="#">Contatti</a>
+    <a href="#">Instagram</a>
+    <a href="#">TikTok</a>
+  </div>
+  <div class="footer-copy">© 2026 RISE. Tutti i diritti riservati.</div>
+</footer>
+
+<script>
+  // Counter animation
+  function animateCounter(el, target, prefix, suffix, duration) {
+    let start = 0;
+    const step = target / (duration / 16);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= target) { start = target; clearInterval(timer); }
+      el.textContent = prefix + Math.floor(start).toLocaleString('it-IT') + suffix;
+    }, 16);
+  }
+
+  // Intersection observer for counters
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animateCounter(document.getElementById('counter-artisti'), 127, '', '', 1500);
+        animateCounter(document.getElementById('counter-montepremi'), 815, '€', '', 1500);
+        observer.disconnect();
+      }
+    });
+  });
+  observer.observe(document.querySelector('.hero-stats'));
+
+  // Montepremi counter
+  let mp = 0;
+  const target = 340;
+  const mpEl = document.getElementById('montepremi');
+  setTimeout(() => {
+    const timer = setInterval(() => {
+      mp += 2.8;
+      if (mp >= target) { mp = target; clearInterval(timer); }
+      mpEl.textContent = '€ ' + mp.toFixed(2).replace('.', ',');
+    }, 16);
+  }, 500);
+
+  // Tabs
+  let currentTab = 'artista';
+  function setTab(tab, btn) {
+    currentTab = tab;
+    document.querySelectorAll('.signup-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Form submit
+  function handleSubmit(e) {
+    e.preventDefault();
+    const email = document.getElementById('email-input').value;
+    document.querySelector('.signup-form').style.display = 'none';
+    document.getElementById('success-msg').style.display = 'block';
+    // Qui integrerai Mailchimp/Brevo con la vera API
+    console.log('Signup:', email, currentTab);
+  }
+
+  // Scroll animations
+  const scrollEls = document.querySelectorAll('.step-card, .piano-card, .vincitore-card');
+  const scrollObs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => {
+          e.target.style.opacity = '1';
+          e.target.style.transform = 'translateY(0)';
+        }, i * 100);
+        scrollObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  scrollEls.forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    scrollObs.observe(el);
+  });
+</script>
+</body>
+</html>
