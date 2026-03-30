@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RISE — Classifiche Live</title>
+<meta name="description" content="Scopri gli artisti indipendenti più votati su RISE. Classifiche aggiornate ogni 24 ore.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@700&display=swap" rel="stylesheet">
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+  import { getFirestore, collection, query, where, orderBy, limit, getDocs, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+  // RISE Firebase config — aggiorna con i tuoi valori reali
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "rise-2cc37.firebaseapp.com",
+    projectId: "rise-2cc37",
+    storageBucket: "rise-2cc37.firebasestorage.app",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // Carica gara attiva
+  async function loadGaraAttiva() {
+    try {
+      const garaQ = query(
+        collection(db, 'gare'),
+        where('stato', '!=', 'chiusa'),
+        limit(1)
+      );
+      const snap = await getDocs(garaQ);
+      if (!snap.empty) {
+        const gara = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        updateGaraUI(gara);
+        loadClassifica(gara.id);
+        startCountdown(gara.data_fine?.toDate());
+      }
+    } catch(e) {
+      console.log('Firebase non configurato — uso dati demo');
+      loadDemoData();
+    }
+  }
+
+  function updateGaraUI(gara) {
+    document.getElementById('gara-tema').textContent = gara.tema || 'Liberta';
+    document.getElementById('gara-mese').textContent = `Gara ${getMese(gara.mese)} ${gara.anno}`;
+    const mp = (gara.n_iscritti || 0) * 2 * 0.70;
+    animateCounter(document.getElementById('montepremi-live'), mp);
+  }
+
+  async function loadClassifica(garaId) {
+    try {
+      const generi = ['indie', 'hiphop', 'pop', 'rock', 'elettronica', 'world'];
+      for (const genere of generi) {
+        const q = query(
+          collection(db, 'brani_in_gara'),
+          where('gara_id', '==', garaId),
+          where('genere', '==', genere),
+          where('eliminato', '==', false),
+          orderBy('voti_totali', 'desc'),
+          limit(5)
+        );
+        const snap = await getDocs(q);
+        const brani = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        renderGenere(genere, brani);
+      }
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('classifica-container').style.display = 'block';
+    } catch(e) {
+      loadDemoData();
+    }
+  }
+
+  window._db = db;
+  window._loadGaraAttiva = loadGaraAttiva;
+  window.initFirebase = loadGaraAttiva;
+</script>
+
+<style>
+  :root {
+    --red: #C0392B;
+    --orange: #E07B00;
+    --gold: #F5A623;
+    --black: #0D0D0D;
+    --dark: #1A0A0A;
+    --card: #1E0808;
+    --card2: #160606;
+    --text: #F5F0EB;
+    --muted: #8A7A7A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 60px;
+    background: rgba(13,0,0,0.97);
+    border-bottom: 1px solid rgba(192,57,43,0.2);
+  }
+  .nav-logo {
+    font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700;
+    color: var(--red); letter-spacing: 4px; text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none; font-size: 14px;
+    letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
+  .nav-cta {
+    background: var(--red); color: white !important;
+    padding: 8px 20px; border-radius: 2px; font-weight: 500;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 60px 60px 40px;
+    background: linear-gradient(to bottom, #1a0000, var(--black));
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 40px;
+  }
+  .hero-left {}
+  .hero-eyebrow {
+    font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
+    color: var(--orange); margin-bottom: 12px;
+  }
+  .hero-title {
+    font-family: 'Oswald', sans-serif; font-size: 56px; font-weight: 700;
+    line-height: 1; margin-bottom: 8px;
+  }
+  .hero-sub { color: var(--muted); font-size: 16px; }
+  .hero-right { text-align: right; }
+  .montepremi-label {
+    font-size: 11px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--orange); margin-bottom: 8px;
+  }
+  .montepremi-amount {
+    font-family: 'Oswald', sans-serif; font-size: 64px; font-weight: 700;
+    color: var(--gold); line-height: 1;
+    text-shadow: 0 0 40px rgba(245,166,35,0.3);
+  }
+  .montepremi-note { color: var(--muted); font-size: 13px; margin-top: 4px; }
+
+  /* GARA INFO BAR */
+  .gara-bar {
+    display: flex; gap: 0; overflow-x: auto;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .gara-info {
+    padding: 16px 40px; border-right: 1px solid rgba(255,255,255,0.05);
+    flex-shrink: 0;
+  }
+  .gara-info-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--muted); }
+  .gara-info-value { font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 600; margin-top: 2px; }
+  .gara-info-value.red { color: var(--red); }
+  .gara-info-value.gold { color: var(--gold); }
+
+  /* COUNTDOWN */
+  .countdown {
+    display: flex; gap: 4px; align-items: center; margin-top: 4px;
+  }
+  .countdown-box {
+    background: var(--card); padding: 4px 10px; border-radius: 2px;
+    font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 700;
+    color: var(--red); min-width: 40px; text-align: center;
+  }
+  .countdown-sep { color: var(--muted); font-size: 16px; }
+
+  /* TABS GENERE */
+  .genere-tabs {
+    display: flex; gap: 0; padding: 40px 60px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    overflow-x: auto;
+  }
+  .genere-tab {
+    padding: 14px 28px; font-family: 'Oswald', sans-serif;
+    font-size: 15px; letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; border: none; background: none;
+    color: var(--muted); border-bottom: 2px solid transparent;
+    transition: all 0.2s; margin-bottom: -1px; white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .genere-tab.active { color: var(--red); border-bottom-color: var(--red); }
+  .genere-tab:hover { color: var(--text); }
+
+  /* CLASSIFICA */
+  .classifica-section { padding: 40px 60px; max-width: 1000px; margin: 0 auto; }
+  .genere-panel { display: none; }
+  .genere-panel.active { display: block; }
+  .classifica-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px;
+  }
+  .classifica-title {
+    font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700;
+  }
+  .update-time { color: var(--muted); font-size: 13px; }
+
+  /* BRANO ROW */
+  .brano-row {
+    display: flex; align-items: center; gap: 20px;
+    background: var(--card); padding: 20px 24px;
+    margin-bottom: 2px; transition: background 0.2s;
+    cursor: pointer; position: relative;
+  }
+  .brano-row:hover { background: var(--card2); }
+  .brano-row.top1 { border-left: 3px solid var(--gold); }
+  .brano-row.top2 { border-left: 3px solid #aaa; }
+  .brano-row.top3 { border-left: 3px solid #cd7f32; }
+
+  .rank-badge {
+    width: 48px; height: 48px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Oswald', sans-serif; font-size: 22px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .rank-1 { background: var(--gold); color: var(--black); }
+  .rank-2 { background: #aaa; color: var(--black); }
+  .rank-3 { background: #cd7f32; color: white; }
+  .rank-other { background: var(--dark); color: var(--muted); }
+
+  .brano-cover {
+    width: 60px; height: 60px; border-radius: 4px;
+    background: var(--dark); object-fit: cover; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+  }
+  .brano-cover img { width: 100%; height: 100%; border-radius: 4px; object-fit: cover; }
+
+  .brano-info { flex: 1; min-width: 0; }
+  .brano-titolo {
+    font-family: 'Oswald', sans-serif; font-size: 20px; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .brano-artista { color: var(--muted); font-size: 14px; margin-top: 2px; }
+  .brano-genere {
+    display: inline-block; margin-top: 6px;
+    background: rgba(192,57,43,0.15); color: var(--red);
+    font-size: 11px; letter-spacing: 1px; padding: 2px 8px;
+    border-radius: 2px; text-transform: uppercase;
+  }
+
+  .brano-voti { text-align: right; flex-shrink: 0; }
+  .voti-num {
+    font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700;
+    color: var(--gold);
+  }
+  .voti-label { color: var(--muted); font-size: 12px; }
+  .variazione { font-size: 13px; margin-top: 4px; }
+  .var-su { color: #4caf50; }
+  .var-giu { color: #f44336; }
+  .var-stabile { color: var(--muted); }
+
+  .vota-btn {
+    background: var(--red); color: white; border: none;
+    padding: 10px 20px; font-family: 'Oswald', sans-serif;
+    font-size: 14px; letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer; border-radius: 2px; flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .vota-btn:hover { background: #a93226; transform: scale(1.05); }
+
+  /* LOADING */
+  #loading {
+    text-align: center; padding: 80px 40px;
+  }
+  .loading-spinner {
+    width: 48px; height: 48px; border: 3px solid var(--card);
+    border-top-color: var(--red); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 0 auto 20px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* DOWNLOAD APP BANNER */
+  .app-banner {
+    background: var(--card); border-top: 1px solid rgba(192,57,43,0.3);
+    padding: 40px 60px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 24px;
+  }
+  .banner-text h3 {
+    font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .banner-text p { color: var(--muted); font-size: 15px; }
+  .banner-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+  .store-btn {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--dark); border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text); text-decoration: none; padding: 12px 20px;
+    border-radius: 4px; transition: all 0.2s;
+    font-size: 14px;
+  }
+  .store-btn:hover { border-color: var(--red); }
+  .store-btn .icon { font-size: 24px; }
+  .store-btn .label { line-height: 1.2; }
+  .store-btn .sub { font-size: 11px; color: var(--muted); }
+  .store-btn .name { font-family: 'Oswald', sans-serif; font-size: 16px; font-weight: 600; }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 60px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px;
+  }
+  .footer-logo { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 700; color: var(--red); letter-spacing: 4px; }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--muted); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--text); }
+  .footer-copy { color: var(--muted); font-size: 13px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 14px 20px; }
+    .nav-links { gap: 16px; }
+    .nav-links a:not(.nav-cta) { display: none; }
+    .hero { padding: 40px 20px 32px; }
+    .hero-title { font-size: 40px; }
+    .montepremi-amount { font-size: 48px; }
+    .hero { flex-direction: column; }
+    .hero-right { text-align: left; }
+    .genere-tabs { padding: 24px 20px 0; }
+    .classifica-section { padding: 24px 20px; }
+    .brano-row { padding: 16px; gap: 12px; }
+    .brano-cover { width: 48px; height: 48px; }
+    .vota-btn { display: none; }
+    .app-banner { padding: 32px 20px; }
+    footer { padding: 32px 20px; flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">RISE</a>
+  <div class="nav-links">
+    <a href="#classifica" class="active">Classifiche</a>
+    <a href="index.html">Home</a>
+    <a href="legal.html">Privacy</a>
+    <a href="index.html#iscriviti" class="nav-cta">Scarica l'app</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow">Classifiche in tempo reale</div>
+    <h1 class="hero-title">CHI SALE,<br>CHI SCENDE.</h1>
+    <p class="hero-sub" id="gara-mese">Gara Aprile 2026</p>
+  </div>
+  <div class="hero-right">
+    <div class="montepremi-label">Montepremi attuale</div>
+    <div class="montepremi-amount">€ <span id="montepremi-live">340,00</span></div>
+    <div class="montepremi-note">Tema: <strong id="gara-tema">Libertà</strong></div>
+  </div>
+</div>
+
+<!-- GARA BAR -->
+<div class="gara-bar">
+  <div class="gara-info">
+    <div class="gara-info-label">Fase attuale</div>
+    <div class="gara-info-value red" id="fase-attuale">Semifinale</div>
+  </div>
+  <div class="gara-info">
+    <div class="gara-info-label">Artisti in gara</div>
+    <div class="gara-info-value" id="artisti-count">48</div>
+  </div>
+  <div class="gara-info">
+    <div class="gara-info-label">Fine gara</div>
+    <div class="countdown">
+      <div class="countdown-box" id="cd-gg">--</div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-box" id="cd-hh">--</div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-box" id="cd-mm">--</div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-box" id="cd-ss">--</div>
+    </div>
+  </div>
+  <div class="gara-info">
+    <div class="gara-info-label">Classifica aggiornata</div>
+    <div class="gara-info-value" id="ultimo-aggiornamento">Oggi alle 12:00</div>
+  </div>
+</div>
+
+<!-- TABS GENERE -->
+<div class="genere-tabs" id="classifica">
+  <button class="genere-tab active" onclick="showGenere('indie', this)">🎸 Indie</button>
+  <button class="genere-tab" onclick="showGenere('hiphop', this)">🎤 Hip Hop</button>
+  <button class="genere-tab" onclick="showGenere('pop', this)">🎵 Pop</button>
+  <button class="genere-tab" onclick="showGenere('rock', this)">🤘 Rock</button>
+  <button class="genere-tab" onclick="showGenere('elettronica', this)">🎛️ EDM</button>
+  <button class="genere-tab" onclick="showGenere('world', this)">🌍 World</button>
+</div>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="loading-spinner"></div>
+  <p style="color:var(--muted)">Caricamento classifica...</p>
+</div>
+
+<!-- CLASSIFICHE -->
+<div id="classifica-container" style="display:none">
+  <div class="classifica-section">
+
+    <div id="panel-indie" class="genere-panel active">
+      <div class="classifica-header">
+        <div class="classifica-title">🎸 Indie / Alternative</div>
+        <div class="update-time">Aggiornata ogni 24 ore</div>
+      </div>
+      <div id="list-indie"></div>
+    </div>
+
+    <div id="panel-hiphop" class="genere-panel">
+      <div class="classifica-header">
+        <div class="classifica-title">🎤 Hip Hop / Trap</div>
+        <div class="update-time">Aggiornata ogni 24 ore</div>
+      </div>
+      <div id="list-hiphop"></div>
+    </div>
+
+    <div id="panel-pop" class="genere-panel">
+      <div class="classifica-header">
+        <div class="classifica-title">🎵 Pop</div>
+        <div class="update-time">Aggiornata ogni 24 ore</div>
+      </div>
+      <div id="list-pop"></div>
+    </div>
+
+    <div id="panel-rock" class="genere-panel">
+      <div class="classifica-header">
+        <div class="classifica-title">🤘 Rock / Metal</div>
+        <div class="update-time">Aggiornata ogni 24 ore</div>
+      </div>
+      <div id="list-rock"></div>
+    </div>
+
+    <div id="panel-elettronica" class="genere-panel">
+      <div class="classifica-header">
+        <div class="classifica-title">🎛️ Elettronica / EDM</div>
+        <div class="update-time">Aggiornata ogni 24 ore</div>
+      </div>
+      <div id="list-elettronica"></div>
+    </div>
+
+    <div id="panel-world" class="genere-panel">
+      <div class="classifica-header">
+        <div class="classifica-title">🌍 World / Altro</div>
+        <div class="update-time">Aggiornata ogni 24 ore</div>
+      </div>
+      <div id="list-world"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- APP BANNER -->
+<div class="app-banner">
+  <div class="banner-text">
+    <h3>Vota i tuoi artisti preferiti</h3>
+    <p>Scarica RISE e usa i tuoi 5 voti gratuiti settimanali. Il vincitore porta a casa il montepremi.</p>
+  </div>
+  <div class="banner-btns">
+    <a href="#" class="store-btn">
+      <span class="icon">🍎</span>
+      <div class="label">
+        <div class="sub">Scarica su</div>
+        <div class="name">App Store</div>
+      </div>
+    </a>
+    <a href="#" class="store-btn">
+      <span class="icon">🤖</span>
+      <div class="label">
+        <div class="sub">Disponibile su</div>
+        <div class="name">Google Play</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">RISE</div>
+  <div class="footer-links">
+    <a href="index.html">Home</a>
+    <a href="legal.html">Privacy Policy</a>
+    <a href="legal.html">Termini</a>
+    <a href="mailto:boschinod@gmail.com">Contatti</a>
+  </div>
+  <div class="footer-copy">© 2026 RISE</div>
+</footer>
+
+<script>
+  // Demo data se Firebase non è configurato
+  const demoData = {
+    indie: [
+      { titolo: "Notte Eterna", artista: "Marco Ricci", voti_totali: 3241, posizione_precedente: 3, url_cover: null },
+      { titolo: "Radici", artista: "Sara Montini", voti_totali: 2987, posizione_precedente: 2, url_cover: null },
+      { titolo: "Volo Libero", artista: "The Wanderers", voti_totali: 2756, posizione_precedente: 4, url_cover: null },
+      { titolo: "Cemento", artista: "Luca Ferro", voti_totali: 2431, posizione_precedente: 3, url_cover: null },
+      { titolo: "Alba Rossa", artista: "Mara Sole", voti_totali: 2198, posizione_precedente: 7, url_cover: null },
+    ],
+    hiphop: [
+      { titolo: "Strade di Notte", artista: "DJ Storm", voti_totali: 4102, posizione_precedente: 2, url_cover: null },
+      { titolo: "Flow Libero", artista: "MC Bricks", voti_totali: 3876, posizione_precedente: 1, url_cover: null },
+      { titolo: "100 Passi", artista: "Giò Wave", voti_totali: 3201, posizione_precedente: 3, url_cover: null },
+      { titolo: "Periferia", artista: "Kira B", voti_totali: 2890, posizione_precedente: 5, url_cover: null },
+      { titolo: "Metropoli", artista: "Raw Tone", voti_totali: 2445, posizione_precedente: 4, url_cover: null },
+    ],
+    pop: [
+      { titolo: "Cuore di Vetro", artista: "Elena Bianchi", voti_totali: 5230, posizione_precedente: 1, url_cover: null },
+      { titolo: "Primavera", artista: "Sole & Luna", voti_totali: 4876, posizione_precedente: 3, url_cover: null },
+      { titolo: "Distanza", artista: "Aria Nova", voti_totali: 4102, posizione_precedente: 2, url_cover: null },
+      { titolo: "Insieme", artista: "Marco e Giulia", voti_totali: 3654, posizione_precedente: 4, url_cover: null },
+      { titolo: "Estate Infinita", artista: "Beach Club", voti_totali: 3210, posizione_precedente: 6, url_cover: null },
+    ],
+    rock: [
+      { titolo: "Tempesta", artista: "Iron Wave", voti_totali: 2876, posizione_precedente: 2, url_cover: null },
+      { titolo: "Ribellione", artista: "The Clash Kids", voti_totali: 2543, posizione_precedente: 1, url_cover: null },
+      { titolo: "Fuoco", artista: "Bruno Riva", voti_totali: 2109, posizione_precedente: 3, url_cover: null },
+      { titolo: "Silenzio Assordante", artista: "Void Echo", voti_totali: 1876, posizione_precedente: 5, url_cover: null },
+      { titolo: "Muri", artista: "Stone Age", voti_totali: 1543, posizione_precedente: 4, url_cover: null },
+    ],
+    elettronica: [
+      { titolo: "Frequenza", artista: "Synth Master", voti_totali: 3987, posizione_precedente: 1, url_cover: null },
+      { titolo: "Deep Space", artista: "AstroBeats", voti_totali: 3654, posizione_precedente: 3, url_cover: null },
+      { titolo: "Bass Drop", artista: "Sub Zero", voti_totali: 3201, posizione_precedente: 2, url_cover: null },
+      { titolo: "Digital Rain", artista: "Pixel Sound", voti_totali: 2876, posizione_precedente: 4, url_cover: null },
+      { titolo: "Trance Italia", artista: "DJ Lunar", voti_totali: 2345, posizione_precedente: 6, url_cover: null },
+    ],
+    world: [
+      { titolo: "Mediterraneo", artista: "Toni Greco", voti_totali: 2109, posizione_precedente: 2, url_cover: null },
+      { titolo: "Bossa Nova Roma", artista: "Café Latino", voti_totali: 1987, posizione_precedente: 1, url_cover: null },
+      { titolo: "Jazz Notturno", artista: "Blue Note Trio", voti_totali: 1765, posizione_precedente: 3, url_cover: null },
+      { titolo: "Flamenco Italiano", artista: "Fuego", voti_totali: 1543, posizione_precedente: 5, url_cover: null },
+      { titolo: "Tarantella 2.0", artista: "Sud Sound", voti_totali: 1210, posizione_precedente: 4, url_cover: null },
+    ],
+  };
+
+  function loadDemoData() {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('classifica-container').style.display = 'block';
+    Object.keys(demoData).forEach(genere => renderGenere(genere, demoData[genere]));
+  }
+
+  function renderGenere(genere, brani) {
+    const container = document.getElementById('list-' + genere);
+    if (!container) return;
+    container.innerHTML = '';
+    brani.forEach((brano, i) => {
+      const rank = i + 1;
+      const var_pos = (brano.posizione_precedente || rank) - rank;
+      const varHtml = var_pos > 0
+        ? `<span class="variazione var-su">▲ ${var_pos}</span>`
+        : var_pos < 0
+        ? `<span class="variazione var-giu">▼ ${Math.abs(var_pos)}</span>`
+        : `<span class="variazione var-stabile">◆ 0</span>`;
+
+      const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-other';
+      const rowClass = rank <= 3 ? `brano-row top${rank}` : 'brano-row';
+      const coverContent = brano.url_cover
+        ? `<img src="${brano.url_cover}" alt="${brano.titolo}">`
+        : '🎵';
+
+      container.innerHTML += `
+        <div class="${rowClass}">
+          <div class="rank-badge ${rankClass}">${rank}</div>
+          <div class="brano-cover">${coverContent}</div>
+          <div class="brano-info">
+            <div class="brano-titolo">${brano.titolo}</div>
+            <div class="brano-artista">${brano.artista_nome || brano.artista}</div>
+            <span class="brano-genere">${genere}</span>
+          </div>
+          <div class="brano-voti">
+            <div class="voti-num">${Number(brano.voti_totali).toLocaleString('it-IT')}</div>
+            <div class="voti-label">voti</div>
+            ${varHtml}
+          </div>
+          <button class="vota-btn" onclick="votaClick('${brano.titolo}')">Vota 🔥</button>
+        </div>
+      `;
+    });
+  }
+
+  function votaClick(titolo) {
+    alert('Per votare, scarica l\'app RISE! 🔥');
+  }
+
+  function showGenere(genere, btn) {
+    document.querySelectorAll('.genere-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.genere-tab').forEach(b => b.classList.remove('active'));
+    document.getElementById('panel-' + genere).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function animateCounter(el, target) {
+    let current = 0;
+    const step = target / 60;
+    const timer = setInterval(() => {
+      current += step;
+      if (current >= target) { current = target; clearInterval(timer); }
+      el.textContent = current.toFixed(2).replace('.', ',');
+    }, 16);
+  }
+
+  function startCountdown(endDate) {
+    if (!endDate) {
+      // Demo: fine mese
+      const now = new Date();
+      endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59);
+    }
+    function update() {
+      const diff = endDate - new Date();
+      if (diff <= 0) { clearInterval(timer); return; }
+      const gg = Math.floor(diff / 86400000);
+      const hh = Math.floor((diff % 86400000) / 3600000);
+      const mm = Math.floor((diff % 3600000) / 60000);
+      const ss = Math.floor((diff % 60000) / 1000);
+      document.getElementById('cd-gg').textContent = String(gg).padStart(2, '0');
+      document.getElementById('cd-hh').textContent = String(hh).padStart(2, '0');
+      document.getElementById('cd-mm').textContent = String(mm).padStart(2, '0');
+      document.getElementById('cd-ss').textContent = String(ss).padStart(2, '0');
+    }
+    const timer = setInterval(update, 1000);
+    update();
+  }
+
+  function getMese(n) {
+    const mesi = ['','Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+    return mesi[n] || '';
+  }
+
+  // Aggiornamento ora
+  const now = new Date();
+  document.getElementById('ultimo-aggiornamento').textContent =
+    'Oggi alle ' + String(now.getHours()).padStart(2,'0') + ':00';
+
+  // Init
+  startCountdown(null);
+  if (typeof initFirebase === 'function') {
+    initFirebase();
+  } else {
+    loadDemoData();
+  }
+</script>
+</body>
+</html>
